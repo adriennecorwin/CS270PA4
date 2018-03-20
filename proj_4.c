@@ -28,7 +28,7 @@ int main(int argc, const char *argv[]) {
 
 char user_answer [200];
 int exit_status;
-
+char c;
         //if the argument count is not equal to ARGUMENTS, or the value of 2
         if (argc != ARGUMENTS)
         {
@@ -43,12 +43,21 @@ int exit_status;
 		{
 			printf("msh > ");
 			scanf("%s %i", user_answer, &exit_status);
-			if (strcmp(user_answer, "done") == 0)
+
+
+if((c = getchar()) == EOF )
+{
+
+exit(0);
+
+}
+
+
+			else if (strcmp(user_answer, "done") == 0)
 			{
 				printf("%i", exit_status);
 				exit(exit_status);
 			}
-
 		}
 	}
 }
