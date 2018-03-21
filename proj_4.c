@@ -18,12 +18,6 @@ char **splitLine(char *user_answer)
 
 	for(int i = 0; token != NULL; i += 1)
 	{
-
-
-
-
-
-
 		//		printf("%s\n", token);
 		token_storage[i] = token;
 		token = strtok(NULL, " ");
