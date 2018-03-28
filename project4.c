@@ -38,12 +38,12 @@ int valide(char **array, char prompt[], int size)
 		else
 			printf("too many parameters to done\n");
 
-/*		for (int k = 0; k < size; k++)
+		for (int k = 0; k < size; k++)
 		{
 			array[k] = NULL;
 
 		}
-*/
+
 		return 1;
 
 
@@ -216,7 +216,7 @@ if (strcmp(array[0], "run") == 0)
 
 		}
 
-		printf("%s\n", arg[0]);
+//		printf("%s\n", arg[0]);
 
 
 		execvp(arg[0],arg);
@@ -262,6 +262,66 @@ else if (strcmp(array[0], "run\n") == 0)
 if (strcmp(array[0], "fly") == 0)
 {
 	printf("fly\n");
+
+
+ pid = fork();
+        if (pid == 0) { // child
+                //printf("The child is running. The child is about to run %s %s\n",
+                //              cmd, param);
+
+                char *arg[size];
+                for (int j = 0; j < size; j++)
+                {
+
+                        arg[j] = array[j+1];
+
+
+                        if (j == size - 1)
+                        {
+                                arg[j] = NULL;
+                        }
+
+                }
+
+                printf("%s\n", arg[0]);
+
+
+                execvp(arg[0],arg);
+                child_status = wait(&child_status);
+                //pid_t getpid(void);
+                // These lines should not be executed
+                printf("The child failed to exec the program.\n");
+  
+             exit(1);
+        } 
+
+else if (pid < 0)
+{
+
+printf("error\n");
+return -1;
+
+}
+
+else { // parent
+                //printf("The parent started a child to run %s %s.\n", cmd, param);
+              //  (void) wait(&child_status); // block until child terminates /
+
+                //if (wait(&child_status) >= 0)
+                //{
+                if (WIFEXITED(child_status) && !WEXITSTATUS(child_status)) {
+                        printf("Child exited normally.\n");
+                } else {
+                        printf("Child exited abnormally.\n");
+                }
+                //}
+        } // parent
+
+
+
+
+
+
 	return 12;
 }
 
@@ -408,7 +468,7 @@ int main(int argc, const char *argv[]) {
 	if (argc != ARGUMENTS)
 	{
 		//prints to the user how to execute the program
-		printf("Usage: ./prog_4\n");
+		printf("Usage: %s\n", argv[0]);
 	}
 	else
 	{
@@ -420,7 +480,11 @@ int main(int argc, const char *argv[]) {
 			fgets(user_answer, SIZE, stdin);
 
 
-
+/*if (fgets(user_answer, SIZE, stdin) == 0)
+{
+exit(0);
+}
+*/
 
 			/*			for (int k = 0; k < sizeof(user_answer); k++)
 						{
@@ -455,6 +519,14 @@ int main(int argc, const char *argv[]) {
 			array = splitLine(user_answer);//**************************
 			printf("%s\n", array[0]);
 			printf("%s\n", array[1]);
+
+
+//if (array[2] == '\0')
+//{
+
+printf("%s\n", array[2]);
+//printf("null");
+//}
 			//int l =sizeof(array)/sizeof(char**);
 			/*for (l = 0; array[l] != NULL; l++)
 			  {
@@ -472,6 +544,21 @@ int main(int argc, const char *argv[]) {
 
 
 			}
+
+
+for (int j = 0; j <= size_of_array; j++)
+{
+if ( j == size_of_array)
+{
+array[j] = NULL;
+
+}
+
+}
+
+
+
+
 
 			printf("size2 = %i\n", size_of_array);
 
