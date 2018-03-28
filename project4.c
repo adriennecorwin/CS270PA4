@@ -24,7 +24,12 @@ int valide(char **array, char prompt[], int size)
 	if (strcmp(array[0], "done") == 0)
 	{
 		//              sscanf(*array, "done %s %s", array[1], array[2]);
-		if (isdigit(*array[1]) && array[2] == '\0')
+		
+                if(size==1){
+                        return 2;
+                }
+ 
+		else if (isdigit(*array[1]) && array[2] == '\0')
 		{
 			printf("param = %s\n", array[1]);
 
@@ -44,16 +49,28 @@ int valide(char **array, char prompt[], int size)
 
 		}
 
-		return 1;
+//		return 2;
 
 
 	}
 
 
-	else if (strcmp(array[0], "done\n") == 0)
-	{
-		return 2;
-	}
+/*		else if (strcmp(array[0], "done\n") == 0)
+		{
+printf("*********************\n");
+	//array[1] = 0;
+//	exit(*array[1]);
+	return 2;
+
+	//  for (int k = 0; k < size; k++)
+	//{
+	//array[k] = NULL;
+
+	//}
+
+
+
+	}*/
 	/*else if (strcmp(array[0], "") == 0)
 	  {
 
@@ -197,6 +214,74 @@ if (strcmp(array[0], "run") == 0)
 {
 	printf("run!\n");
 
+		pid = fork();
+		if (pid == 0) { // child
+	//printf("The child is running. The child is about to run %s %s\n",
+	//              cmd, param);
+
+	char *arg[size];
+	for (int j = 0; j < size; j++)
+	{
+
+	arg[j] = array[j+1];
+
+
+	if (j == size - 1)
+	{
+	arg[j] = NULL;
+	}
+
+	}
+
+	//		printf("%s\n", arg[0]);
+
+
+	execvp(arg[0],arg);
+	//child_status = wait(&child_status);
+	//pid_t getpid(void);
+	// These lines should not be executed
+	printf("The child failed to exec the program.\n");
+	exit(1);
+	} else { // parent
+	//printf("The parent started a child to run %s %s.\n", cmd, param);
+	(void) wait(&child_status); // block until child terminates /
+
+	//if (wait(&child_status) >= 0)
+	//{
+	if (WIFEXITED(child_status) && !WEXITSTATUS(child_status)) {
+	printf("Child exited normally.\n");
+	} else {
+	printf("Child exited abnormally.\n");
+	}
+	//}
+	} // parent
+
+
+
+
+
+
+
+	for (int k = 0; k < size; k++)
+	{
+	array[k] = NULL;
+
+	}
+	 
+	return 10;
+}
+
+else if (strcmp(array[0], "run\n") == 0)
+{
+	printf("error!\n");
+	return 11;
+}
+//**********************************use fork and exec*************************
+if (strcmp(array[0], "fly") == 0)
+{
+	printf("fly\n");
+
+
 	pid = fork();
 	if (pid == 0) { // child
 		//printf("The child is running. The child is about to run %s %s\n",
@@ -216,106 +301,43 @@ if (strcmp(array[0], "run") == 0)
 
 		}
 
-//		printf("%s\n", arg[0]);
+		//        printf("%s\n", arg[0]);
 
 
 		execvp(arg[0],arg);
-		//child_status = wait(&child_status);
+		child_status = wait(&child_status);
 		//pid_t getpid(void);
 		// These lines should not be executed
 		printf("The child failed to exec the program.\n");
+
 		exit(1);
-	} else { // parent
+	} 
+
+	/*else if (pid < 0)
+	  {
+
+	  printf("error\n");
+	  return -1;
+
+	  }*/
+
+	else { // parent
 		//printf("The parent started a child to run %s %s.\n", cmd, param);
-		(void) wait(&child_status); // block until child terminates /
+//		(void) wait(&child_status); // block until child terminates /
 
 		//if (wait(&child_status) >= 0)
 		//{
 		if (WIFEXITED(child_status) && !WEXITSTATUS(child_status)) {
-			printf("Child exited normally.\n");
-		} else {
+
+//return 20;
+			printf("process finished.\n");
+		}
+
+		else {
 			printf("Child exited abnormally.\n");
 		}
 		//}
 	} // parent
-
-
-
-
-
-
-
-	for (int k = 0; k < size; k++)
-	{
-		array[k] = NULL;
-
-	}
-
-	return 10;
-}
-
-else if (strcmp(array[0], "run\n") == 0)
-{
-	printf("error!\n");
-	return 11;
-}
-if (strcmp(array[0], "fly") == 0)
-{
-	printf("fly\n");
-
-
- pid = fork();
-        if (pid == 0) { // child
-                //printf("The child is running. The child is about to run %s %s\n",
-                //              cmd, param);
-
-                char *arg[size];
-                for (int j = 0; j < size; j++)
-                {
-
-                        arg[j] = array[j+1];
-
-
-                        if (j == size - 1)
-                        {
-                                arg[j] = NULL;
-                        }
-
-                }
-
-                printf("%s\n", arg[0]);
-
-
-                execvp(arg[0],arg);
-                child_status = wait(&child_status);
-                //pid_t getpid(void);
-                // These lines should not be executed
-                printf("The child failed to exec the program.\n");
-  
-             exit(1);
-        } 
-
-else if (pid < 0)
-{
-
-printf("error\n");
-return -1;
-
-}
-
-else { // parent
-                //printf("The parent started a child to run %s %s.\n", cmd, param);
-              //  (void) wait(&child_status); // block until child terminates /
-
-                //if (wait(&child_status) >= 0)
-                //{
-                if (WIFEXITED(child_status) && !WEXITSTATUS(child_status)) {
-                        printf("Child exited normally.\n");
-                } else {
-                        printf("Child exited abnormally.\n");
-                }
-                //}
-        } // parent
 
 
 
@@ -330,6 +352,7 @@ else if (strcmp(array[0], "fly\n") == 0)
 	printf("error\n");
 	return 13;
 }
+//**********************************use fork and exec*************************
 if (strcmp(array[0], "tovar") == 0)
 {
 
@@ -480,11 +503,11 @@ int main(int argc, const char *argv[]) {
 			fgets(user_answer, SIZE, stdin);
 
 
-/*if (fgets(user_answer, SIZE, stdin) == 0)
-{
-exit(0);
-}
-*/
+			/*if (fgets(user_answer, SIZE, stdin) == 0)
+			  {
+			  exit(0);
+			  }
+			 */
 
 			/*			for (int k = 0; k < sizeof(user_answer); k++)
 						{
@@ -521,12 +544,12 @@ exit(0);
 			printf("%s\n", array[1]);
 
 
-//if (array[2] == '\0')
-//{
+			//if (array[2] == '\0')
+			//{
 
-printf("%s\n", array[2]);
-//printf("null");
-//}
+			//printf("%s\n", array[2]);
+			//printf("null");
+			//}
 			//int l =sizeof(array)/sizeof(char**);
 			/*for (l = 0; array[l] != NULL; l++)
 			  {
@@ -546,18 +569,22 @@ printf("%s\n", array[2]);
 			}
 
 
-for (int j = 0; j <= size_of_array; j++)
-{
-if ( j == size_of_array)
-{
-array[j] = NULL;
+			for (int j = 0; j <= size_of_array; j++)
+			{
+				if ( j == size_of_array)
+				{
+					array[j] = NULL;
 
-}
+				}
+				/*else if (user_answer[j] == '\n')
+				  {
+				  break;
+				  }*/
+			}
+			printf("2%s\n", array[0]);
 
-}
 
-
-
+//			int stat = 0;
 
 
 			printf("size2 = %i\n", size_of_array);
@@ -567,8 +594,9 @@ array[j] = NULL;
 			//count = 0;
 
 			if (check == 2)
-			{
-				exit(0);
+			{//printf("k\n");
+				//	exit(stat);
+return 0;
 			}
 
 			if (check == 3)
@@ -594,11 +622,22 @@ array[j] = NULL;
 				printf("error\n");
 
 			}
+if (check == 20)
+{
+if ( fgets(user_answer, SIZE, stdin) != NULL)
+{
+
+printf("done\n");
+continue;
+}
+
+
+}
 			if (check == -1)
 			{
 				//*                             if(array[0] != '\n')
 				//                              {
-				printf("invalid command %s", array[0]);
+				printf("invalid command %s\n", array[0]);
 				//                              }
 				//                              else*/
 				//                                      printf("%s > ", prompt);
@@ -641,7 +680,7 @@ array[j] = NULL;
 
 									printf("hey");
 									}*/
-
+			//return 0;
 		}
 	}
 }
