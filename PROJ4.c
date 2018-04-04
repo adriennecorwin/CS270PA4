@@ -137,14 +137,16 @@ void showprocs(char **tokens, pid_t *back_pid, int **num_backPids, char **back_t
         }
 }
 
-void tovar(char **tokens, char **var_names, char **var_vals){
+void tovar(char **tokens, char **var_names, char **var_vals, int **num_vars){
+signal(SIGPIPE, SIG_IGN);
 	pid_t pid;
         int child_status;
 	int fd[2];
-	char *output = malloc(SIZE*sizeof(char));
-	if(pipe(fd)==-1){
+	char output[SIZE];// = malloc(SIZE*sizeof(char));
+pipe(fd);
+/*	if(pipe(fd)==-1){
 		fprintf(stderr, "Pipe failed\n");
-	}
+	}*/
         pid = fork();
 	if(pid<0){
 		fprintf(stderr, "Fork failed\n");
@@ -153,13 +155,15 @@ void tovar(char **tokens, char **var_names, char **var_vals){
                 char *arg[SIZE];
                 for (int j = 0; j < SIZE; j++){
                         arg[j] = tokens[j+2];
-                        if (j == SIZE - 2){
+                        if (j == SIZE - 1){
                                 arg[j] = NULL;
                         }
                 }
-		close(fd[0]);
+//		close(fd[0]);
 		dup2(fd[1], 1);
-		close(fd[1]);
+close(fd[0]);
+//		close(fd[1]);
+//close(fd[0]);
 	//	dup2(fd[1], 2);
 	//	read(fd[0], output, sizeof(output));
 	//	close(fd[0]);
@@ -170,23 +174,72 @@ void tovar(char **tokens, char **var_names, char **var_vals){
                 exit(1);
         }
         else { // parent
-		close(fd[1]);
-		dup2(fd[0], 0);
-		close(fd[0]);
+//		close(fd[1]);
+
+int count;
+count = read(fd[0], output, sizeof(output));
+//printf("%s\n", output);
+int find_var =0;
+while(find_var<**num_vars && strcmp(var_names[find_var], tokens[1])!=0){
+	find_var+=1;
+}
+if(find_var!=**num_vars){
+	for(int set_index =0; set_index<sizeof(output); set_index+=1){
+		var_vals[find_var][set_index]=output[set_index];
+	}
+}
+else{	
+	**num_vars+=1;
+ 	for(int set_index =0; set_index<sizeof(output); set_index+=1){
+		var_names[**num_vars-1][set_index]=tokens[1][set_index];
+	}
+	for(int set_index =0; set_index<sizeof(output); set_index+=1){
+                var_vals[**num_vars-1][set_index]=output[set_index];
+        }
+printf("%s\n", var_vals[**num_vars-1]);
+
+}
+//		dup2(fd[1], 1);
+//		close(fd[0]);
 	//	write(fd[1], output, strlen(output)+1);
 //		printf("%s\n", output);
                 (void) wait(&child_status); // block until child terminates /
+
+
+/*while ((count = read(fd[0], output, sizeof(output))) != 0)
+{
+//fwrite(output, count, 1, stdout);
+printf("(%.*s\n", count, output);
+}*/
+
+
+
                 if (WIFEXITED(child_status) && !WEXITSTATUS(child_status)) {
-                        printf("Child exited normally.\n");
+                       
+
+// dup2(fd[1], 1);
+  //              close(fd[0]);
+
+ printf("Child exited normally.\n");
                 }
                 else {
                         printf("Child exited abnormally.\n");
-                }
+     
+           }
+
+/*while ((count = read(fd[0], output, sizeof(output))) != 0)
+{
+//fwrite(output, count, 1, stdout);
+printf("(%.*s\n", count, output);
+}
+close(fd[0]);
+close(fd[1]);
+*/
         } // parent
 
-        for (int k = 0; k < SIZE; k++){
+     /*   for (int k = 0; k < SIZE; k++){
                 tokens[k] = NULL;
-        }
+        }*/
 }
 
 char **replace_var(char **tokens, char **var_names, char **var_vals, int num_tokens, int num_vars, int carrot_index){
@@ -323,7 +376,7 @@ void parse(char **tokens, int num_tokens, int *num_vars, int *showTokens, char *
 	}//end else if
 	else if (strcmp(tokens[0], TOVAR) == 0){
 		if(num_tokens>=3){
-			tovar(tokens, var_names, var_vals);
+			tovar(tokens, var_names, var_vals, &num_vars);
 		}
 		else{
 			printf("Insufficient parameters\n");
