@@ -1,0 +1,2 @@
+run /bin/cat test1.txt #ad
+run ls -lt

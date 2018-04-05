@@ -1,0 +1,15 @@
+setvar PATH "/bin:/usr/bin" # this is the default setting
+setvar HOME "/home/mylogin" # a useful shorthand
+setvar Myfile "/etc/hosts" # the quotes are unnecessary but valid
+setvar Filebase "paper"
+setvar showTokens 1 # a special token, described later
+run echo "my path is ^PATH" # should output "my path is /bin:/usr/bin"
+setdir /usr/bin # no output expected
+run ls awk # prints "awk".
+setdir ../misc/oldstuff # prints an error message.
+setdir ^HOME
+run /usr/bin/wc -l ^Myfile # prints "9 /etc/hosts"
+fly wc -l ^Myfile ^Myfile # prints three lines
+tovar TextFile /bin/echo -e ^Filebase "\b.txt"
+run echo ^TextFile # prints "paper.txt"
+done
